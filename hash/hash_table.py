@@ -10,7 +10,9 @@ class HashTableItem:
     value: typing.Any
     next: HashTableItem = None
 
-def walk_hashtable_items(root: HashTableItem) -> HashTableItem:
+HashTableItemGenerator = typing.Generator[HashTableItem, None, None]
+
+def walk_hashtable_items(root: HashTableItem) -> HashTableItemGenerator:
     while root:
         yield root
         root = root.next
