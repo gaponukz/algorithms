@@ -1,47 +1,82 @@
+from __future__ import annotations
+
 import unittest
+import dataclasses
+import typing
 
-class SparseList(list):
-    def __setitem__(self, index, value):
-        sparsity = index - len(self) + 1
-        self.extend([None] * sparsity)
-        list.__setitem__(self, index, value)
+@dataclasses.dataclass
+class HashTableItem:
+    key: typing.Hashable
+    value: typing.Any
+    is_valid: bool = True
+    next: HashTableItem = None
 
-class HashTable(object):
+class HashTable:
     def __init__(self, size=9973):
-        self.size = size
-        self.storage = SparseList()
-        self.storage = [None] * size
+        self.size: int = size
+        self.storage: list[HashTableItem] = [None] * size
+    
+    def get(self, key: typing.Hashable, defaul: typing.Any=None):
+        try:
+            return self[key]
+        
+        except KeyError:
+            return defaul
 
-    def __setitem__(self, key, value):
+    def __find_item(self, key: typing.Hashable) -> HashTableItem:
+        key_hash = hash(key) % self.size
+
+        if (item := self.storage[key_hash]):
+            while ...:
+                if not item:
+                    break
+
+                if item.key == key:
+                    return item
+
+                item = item.next
+
+        raise KeyError(key)
+
+    def __setitem__(self, key: typing.Hashable, value: typing.Any) -> None:
         key_hash = hash(key) % self.size
 
         if not self.storage[key_hash]:
-            self.storage[key_hash] = [ [key, value] ].copy()
+            self.storage[key_hash] = HashTableItem(key, value)
         
         else:
-            for index in range(len(self.storage[key_hash])):
-                if self.storage[key_hash][index][0] == key:
-                    self.storage[key_hash][index][1] = value
-                    return
+            item = self.storage[key_hash]
 
-            self.storage[key_hash].append([key, value])
+            while ...:
+                if not item.next:
+                    item.next = HashTableItem(key, value)
+                    break
+                
+                if item.is_valid and item.key == key:
+                    item.value = value
+                    break
+                
+                item = item.next
 
-    def __getitem__(self, key):
-        key_hash = hash(key) % self.size
+    def __getitem__(self, key: typing.Hashable) -> typing.Any:
+        item = self.__find_item(key)
 
-        if self.storage[key_hash]:
-            for index in range(len(self.storage[key_hash])):
-                if self.storage[key_hash][index][0] == key:
-                    return self.storage[key_hash][index][1]
-
-        raise KeyError(key)
+        if not item.is_valid:
+            raise KeyError(key)
+        
+        return item.value
     
-    def __contains__(self, key):
+    def __contains__(self, key: typing.Hashable) -> bool:
         try:
-            return self[key] != None
+            item = self.__find_item(key)
+            return item.is_valid
         
         except KeyError:
             return False
+    
+    def __delitem__(self, key: typing.Hashable) -> None:
+        item = self.__find_item(key)
+        item.is_valid = False
 
 class TestHashTableMethods(unittest.TestCase):
     def test_all_aviable_methods(self):
@@ -59,6 +94,15 @@ class TestHashTableMethods(unittest.TestCase):
 
         with self.assertRaises(KeyError):
             table['key4']
+        
+        del table['key2']
+
+        self.assertTrue('key2' not in table)
+
+        with self.assertRaises(KeyError):
+            table['key2']
+        
+        self.assertEqual(table.get('key2'), None)
 
 if __name__ == '__main__':
     unittest.main()
