@@ -8,8 +8,12 @@ import typing
 class HashTableItem:
     key: typing.Hashable
     value: typing.Any
-    is_valid: bool = True
     next: HashTableItem = None
+
+def walk_hashtable_items(root: HashTableItem) -> HashTableItem:
+    while root:
+        yield root
+        root = root.next
 
 class HashTable:
     def __init__(self, size=9973):
@@ -27,14 +31,12 @@ class HashTable:
         key_hash = hash(key) % self.size
 
         if (item := self.storage[key_hash]):
-            while ...:
+            for item in walk_hashtable_items(item):
                 if not item:
                     break
 
                 if item.key == key:
                     return item
-
-                item = item.next
 
         raise KeyError(key)
 
@@ -46,37 +48,49 @@ class HashTable:
         
         else:
             item = self.storage[key_hash]
-
-            while ...:
+            
+            for item in walk_hashtable_items(item):
                 if not item.next:
                     item.next = HashTableItem(key, value)
                     break
                 
-                if item.is_valid and item.key == key:
+                if item.key == key:
                     item.value = value
                     break
-                
-                item = item.next
 
     def __getitem__(self, key: typing.Hashable) -> typing.Any:
         item = self.__find_item(key)
-
-        if not item.is_valid:
-            raise KeyError(key)
         
         return item.value
     
     def __contains__(self, key: typing.Hashable) -> bool:
         try:
-            item = self.__find_item(key)
-            return item.is_valid
+            self.__find_item(key)
+            return True
         
         except KeyError:
             return False
     
     def __delitem__(self, key: typing.Hashable) -> None:
-        item = self.__find_item(key)
-        item.is_valid = False
+        key_hash = hash(key) % self.size
+
+        if (item := self.storage[key_hash]):
+            for item in walk_hashtable_items(item):
+                if not item:
+                    break
+                
+                if item.key == key:
+                    self.storage[key_hash] = None
+                    return
+                
+                if not item.next:
+                    break
+
+                if item.next.key == key:
+                    item.next = item.next.next
+                    return
+
+        raise KeyError(key)
 
 class TestHashTableMethods(unittest.TestCase):
     def test_all_aviable_methods(self):
