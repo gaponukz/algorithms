@@ -18,6 +18,8 @@ def walk_hashtable_items(root: HashTableItem) -> HashTableItemGenerator:
         root = root.next
 
 class HashTable:
+    __slots__ = 'size', 'storage'
+
     def __init__(self, size=9973):
         self.size: int = size
         self.storage: list[typing.Optional[HashTableItem]] = [None] * size
