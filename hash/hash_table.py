@@ -8,7 +8,7 @@ import typing
 class HashTableItem:
     key: typing.Hashable
     value: typing.Any
-    next: HashTableItem = None
+    next: typing.Optional[HashTableItem] = None
 
 HashTableItemGenerator = typing.Generator[HashTableItem, None, None]
 
@@ -20,7 +20,7 @@ def walk_hashtable_items(root: HashTableItem) -> HashTableItemGenerator:
 class HashTable:
     def __init__(self, size=9973):
         self.size: int = size
-        self.storage: list[HashTableItem] = [None] * size
+        self.storage: list[typing.Optional[HashTableItem]] = [None] * size
     
     def get(self, key: typing.Hashable, defaul: typing.Any=None):
         try:
