@@ -20,18 +20,31 @@ def walk_hashtable_items(root: HashTableItem) -> HashTableItemGenerator:
 class HashTable:
     __slots__ = 'size', 'storage'
 
-    def __init__(self, size=9973):
-        self.size: int = size
-        self.storage: list[typing.Optional[HashTableItem]] = [None] * size
+    def __init__(self, **kwargs: typing.Any):
+        self.size: typing.Final = 9973
+        self.storage: list[typing.Optional[HashTableItem]] = [None] * self.size
+
+        for key in kwargs:
+            self[key] = kwargs[key]
     
-    def get(self, key: typing.Hashable, defaul: typing.Any=None):
+    def get(self, key: typing.Hashable, defaul: typing.Any=None) -> typing.Any:
         try:
             return self[key]
         
         except KeyError:
             return defaul
+    
+    def pop(self, key: typing.Hashable, defaul: typing.Any=None) -> typing.Any:
+        try:
+            item = self[key]
+            del self[key]
 
-    def __find_item(self, key: typing.Hashable) -> HashTableItem:
+            return item
+         
+        except KeyError:
+            return defaul
+
+    def __getitem__(self, key: typing.Hashable) -> typing.Any:
         key_hash = hash(key) % self.size
 
         if (item := self.storage[key_hash]):
@@ -40,10 +53,10 @@ class HashTable:
                     break
 
                 if item.key == key:
-                    return item
+                    return item.value
 
         raise KeyError(key)
-
+    
     def __setitem__(self, key: typing.Hashable, value: typing.Any) -> None:
         key_hash = hash(key) % self.size
 
@@ -61,15 +74,10 @@ class HashTable:
                 if item.key == key:
                     item.value = value
                     break
-
-    def __getitem__(self, key: typing.Hashable) -> typing.Any:
-        item = self.__find_item(key)
-        
-        return item.value
     
     def __contains__(self, key: typing.Hashable) -> bool:
         try:
-            self.__find_item(key)
+            self[key]
             return True
         
         except KeyError:
@@ -98,12 +106,13 @@ class HashTable:
 
 class TestHashTableMethods(unittest.TestCase):
     def test_all_aviable_methods(self):
-        table = HashTable()
+        table = HashTable(init_key = 'init_value')
         table['key1'] = 'value1'
         table['key2'] = 'value2'
         table[3] = 'value3'
         table[101] = 'value4'
         
+        self.assertEqual(table['init_key'], 'init_value')
         self.assertEqual(table[3], 'value3')
         self.assertEqual(table['key1'], 'value1')
         self.assertEqual(table[101], 'value4')
