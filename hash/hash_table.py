@@ -21,7 +21,7 @@ class HashTable:
     __slots__ = 'size', 'storage'
 
     def __init__(self, **kwargs: typing.Any):
-        self.size: typing.Final = 9973
+        self.size: typing.Final = 101111
         self.storage: list[typing.Optional[HashTableItem]] = [None] * self.size
 
         for key in kwargs:
@@ -130,6 +130,8 @@ class TestHashTableMethods(unittest.TestCase):
             table['key2']
         
         self.assertEqual(table.get('key2'), None)
+        self.assertEqual(table.pop(101), 'value4')
+        self.assertEqual(table.pop(101), None)
 
 if __name__ == '__main__':
     unittest.main()
