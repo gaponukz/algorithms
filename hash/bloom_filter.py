@@ -1,46 +1,42 @@
 import math
 import mmh3
-import bitarray
 
-class BloomFilter(object):
-    def __init__(self, items_count, fp_prob):
-        self.fp_prob = fp_prob
-  
-        # Size of bit array to use
-        self.size = self.get_size(items_count, fp_prob)
-  
-        # number of hash functions to use
-        self.hash_count = self.get_hash_count(self.size, items_count)
-  
-        # Bit array of given size
-        self.bit_array = bitarray.bitarray(self.size)
-  
-        # initialize all bits as 0
-        self.bit_array.setall(0)
-    
-    @classmethod
-    def get_size(self, n, p):
-        return int(-(n * math.log(p))/(math.log(2)**2))
-  
-    @classmethod
-    def get_hash_count(self, m, n):
-        k = (m / n) * math.log(2)
 
+class BloomFilter:
+    def __init__(self, capacity: int, false_positive_rate: float) -> None:
+        self.capacity: int = capacity
+        self.false_positive_rate: float = false_positive_rate
+        self.bit_array: list[bool] = [False] * self.__get_size(capacity, false_positive_rate)
+        self.num_hashes: int = self.__get_hash_count(len(self.bit_array), capacity)
+
+    def __get_size(self, capacity: int, false_positive_rate: float) -> int:
+        m: float = - (capacity * math.log(false_positive_rate)) / (math.log(2) ** 2)
+        return int(m)
+
+    def __get_hash_count(self, m: int, n: int) -> int:
+        k: float = (m / n) * math.log(2)
         return int(k)
 
-    def add(self, item):
-        digests = []
+    def _hash(self, item: str) -> list[int]:
+        hashes: list[int] = []
 
-        for i in range(self.hash_count):
-            digest = mmh3.hash(item, i) % self.size
-            digests.append(digest)
+        for i in range(self.num_hashes):
+            # Use MurmurHash3 to generate a 32-bit hash value
+            hash_value = mmh3.hash(item, i) & 0xffffffff
+            hashes.append(hash_value)
 
-            self.bit_array[digest] = True
-  
-    def check(self, item):
-        for i in range(self.hash_count):
-            digest = mmh3.hash(item, i) % self.size
-            if self.bit_array[digest] == False:
+        return hashes
+
+    def add(self, item: str) -> None:
+        for _hash in self._hash(item):
+            index: int = _hash % len(self.bit_array)
+            self.bit_array[index] = True
+
+    def __contains__(self, item: str) -> bool:
+        for _hash in self._hash(item):
+            index = _hash % len(self.bit_array)
+
+            if not self.bit_array[index]:
                 return False
             
         return True
