@@ -4,72 +4,34 @@ import unittest
 import dataclasses
 import typing
 
+KT = typing.TypeVar("KT", bound=typing.Hashable) # key type
+VT = typing.TypeVar("VT") # value type
+DVT = typing.TypeVar("DVT") # default value type
 
 @dataclasses.dataclass
-class HashTableItem:
-    """
-    Data class for a hash table item.
-
-    Attributes:
-        key: A hashable key used for lookup.
-        value: The value associated with the key.
-        next: A reference to the next item in the hash table.
-    """
-    key: typing.Hashable
-    value: typing.Any
-    next: typing.Optional[HashTableItem] = None
+class HashTableItem(typing.Generic[KT, VT]):
+    key: KT
+    value: VT
+    next: HashTableItem[KT, VT] | None = None
 
 
-class HashTable:
-    """
-    A hash table implementation.
-
-    Attributes:
-        size: The size of the hash table.
-        storage: A list of hash table items, used for storing key-value pairs.
-    """
+class HashTable(typing.Generic[KT, VT]):
     __slots__ = 'size', 'storage'
 
-    def __init__(self, **kwargs: typing.Any):
-        """
-        Initializes a new hash table.
-
-        Args:
-            **kwargs: Key-value pairs to add to the hash table.
-        """
-        self.size: typing.Final = 101111
-        self.storage: list[typing.Optional[HashTableItem]] = [None] * self.size
+    def __init__(self, **kwargs: VT):
+        self.size: typing.Final[int] = 101111
+        self.storage: list[HashTableItem[KT, VT] | None] = [None] * self.size
 
         for key in kwargs:
             self[key] = kwargs[key]
 
-    def get(self, key: typing.Hashable, default: typing.Any = None) -> typing.Any:
-        """
-        Returns the value associated with a key, or a default value if the key is not found.
-
-        Args:
-            key: The key to look up in the hash table.
-            default: The default value to return if the key is not found.
-
-        Returns:
-            The value associated with the key, or the default value if the key is not found.
-        """
+    def get(self, key: KT, default: DVT = None) -> VT | DVT:
         try:
             return self[key]
         except KeyError:
             return default
 
-    def pop(self, key: typing.Hashable, default: typing.Any = None) -> typing.Any:
-        """
-        Removes and returns the value associated with a key, or a default value if the key is not found.
-
-        Args:
-            key: The key to remove from the hash table.
-            default: The default value to return if the key is not found.
-
-        Returns:
-            The value associated with the key, or the default value if the key is not found.
-        """
+    def pop(self, key: KT, default: DVT = None) -> VT | DVT:
         try:
             item = self[key]
             del self[key]
@@ -77,19 +39,7 @@ class HashTable:
         except KeyError:
             return default
 
-    def __getitem__(self, key: typing.Hashable) -> typing.Any:
-        """
-        Returns the value associated with the given key.
-
-        Args:
-            key (typing.Hashable): The key to get the value for.
-
-        Raises:
-            KeyError: If the key is not in the hash table.
-
-        Returns:
-            typing.Any: The value associated with the key.
-        """
+    def __getitem__(self, key: KT) -> VT:
         key_hash = hash(key) % self.size
 
         if (item := self.storage[key_hash]):
@@ -102,11 +52,7 @@ class HashTable:
 
         raise KeyError(key)
 
-    def __setitem__(self, key: typing.Hashable, value: typing.Any) -> None:
-        """
-        Adds or updates a key-value pair in the hash table. If the key already exists in the hash table, its
-        value is updated. Otherwise, a new key-value pair is added to the hash table.
-        """
+    def __setitem__(self, key: KT, value: VT) -> None:
         key_hash = hash(key) % self.size
 
         if not self.storage[key_hash]:
@@ -123,21 +69,14 @@ class HashTable:
                     item.value = value
                     break
 
-    def __contains__(self, key: typing.Hashable) -> bool:
-        """
-        Returns True if the given key is found in the hash table, False otherwise.
-        """
+    def __contains__(self, key: KT) -> bool:
         try:
             self[key]
             return True
         except KeyError:
             return False
 
-    def __delitem__(self, key: typing.Hashable) -> None:
-        """
-        Removes the key-value pair with the given key from the hash table. Raises a KeyError if the key is not
-        found in the hash table.
-        """
+    def __delitem__(self, key: KT) -> None:
         key_hash = hash(key) % self.size
 
         if (item := self.storage[key_hash]):
@@ -153,15 +92,6 @@ class HashTable:
                     break
 
     def __walk_hashtable_items(self, root: HashTableItem) -> typing.Iterator[HashTableItem]:
-        """
-        Generator function that walks a chain of hash table items.
-
-        Args:
-            root: The root item in the chain.
-
-        Yields:
-            The next item in the chain, or None if the end is reached.
-        """
         while root:
             yield root
             root = root.next
