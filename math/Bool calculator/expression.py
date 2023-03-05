@@ -6,13 +6,17 @@ OPERATORS = {
         "priority": 1,
         "function": lambda a, b: a or b
     },
-        "and": {
+    "and": {
         "priority": 2,
         "function": lambda a, b: a and b
     },
-        "not": {
+    "not": {
         "priority": 3,
         "function": lambda _, b: not b
+    },
+    "impl": {
+        "priority": 0,
+        "function": lambda a, b: not a or b
     }
 }
 

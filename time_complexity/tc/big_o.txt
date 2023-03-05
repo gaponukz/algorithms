@@ -1,0 +1,80 @@
+2.7)
+f(n) = 3n^2 - n + 4
+g(n) = n*log(n) + 5
+
+So f(n) + g(n) = 3n^2 - n + 4 + n*log(n) + 5
+Constants (and small function `n`) is not important here, so it is n^2 + n*log(n)
+n^2 is bigger than n*log(n) because exists C and n0 where for all n>n0: C*n^2 > n*log(n)
+So f(n) + g(n) = O(n^2)
+
+2.10
+def f(n):
+    sum = 0
+    for i in range(1, n+1):
+        sum = sum + i
+    return sum
+
+Running time is O(n).
+We can make it O(1) using the formula for the sum of an arithmetic sequence
+def f(n):
+    return (n * (n+1)) // 2
+
+2.11)
+def g(n):
+    sum = 0
+    for i in range(1, n + 1):
+        sum += sum + 1 + f(i)
+    return sum
+
+Running time is O(n^2).
+We can make it O(n).
+def g(n):
+    sum = 0
+    f_n = 0
+    for i in range(1, n + 1):
+        f_n += i
+        sum += sum + 1 + f_n
+    return sum
+
+2.11)
+def h(n):
+    return f(n) + g(n)
+Running time is O(n^2).
+But if we use our functions
+
+def f(n):
+    return (n * (n+1)) // 2
+
+def g(n):
+    sum = 0
+    f_n = 0
+    for i in range(1, n + 1):
+        f_n += i
+        sum += sum + 1 + f_n
+    return sum
+
+time complexity is O(n)
+
+2.13 a)
+T(n) = O(1) if n = 0 else T(n-1) + O(1)
+T(n) = T(n-1) + O(1) = T(n-2) + O(1) + O(1) = ... = O(n)
+
+2.13 b)
+T(n) = O(1) if n <= a, a > 1 else T(n-a) + O(1)
+T(n) = T(n-a) + O(1) = T(n-2a) + O(1) + O(1) = ... = O(n/a)
+
+2.13 c)
+T(n) = O(1) if n = 0 else aT(n-1) + O(1)
+T(n) = aT(n-1) + O(1) = a^2 T(n-2) + O(1) + O(1) = ... = a^n
+
+2.13 d)
+T(n) = O(1) if n <= a, a > 1 else aT(n-a) + O(1)
+T(n) = aT(n-a) + O(1) = a^2 T(n-2a) + O(1) + O(1) = ... = O(a^(n/a))
+
+2.13 g)
+T(n) = O(1) if n = 0 else aT([n/a]) + O(1)
+T(n) = aT([n/a]) + O(1) = a^2 * T([n/a^2]) + O(1) + O(1) = ... = O(log_a(n))
+
+2.13 h)
+T(n) = O(1) if n = 0 else aT([n/a]) + O(n)
+T(n) = aT([n/a]) + O(n) = a^2 * T([n/a^2]) + O(n) + O([n/a]) = ... = O(n log_a(n))

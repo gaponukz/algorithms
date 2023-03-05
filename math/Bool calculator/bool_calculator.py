@@ -9,8 +9,11 @@ def print_bool_table(str_expression: str) -> None:
     for bool_args in list(itertools.product(["0", "1"], repeat=len(variables))):
         formtaed_expression = str_expression.format(**{ variables[i]: bool_args[i] for i in range(len(variables)) })
         result = Expression(formtaed_expression).apply()
+        variables_values = " ".join([f"{variables[i]} = {bool_args[i]}" for i in range(len(variables))])
 
-        print(formtaed_expression + " = " + str(int(result)))
+        print(f"{variables_values} | {formtaed_expression} = {int(result)}")
 
 if __name__ == "__main__":
-    print_bool_table("{x} and {y} or not ({z} and {y})")
+    # print_bool_table("{x} and {y} or not ({z} and {y})")
+    
+    print_bool_table("({x} and ({x} impl {y})) impl {y}")
