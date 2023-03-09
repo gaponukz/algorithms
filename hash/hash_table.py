@@ -16,14 +16,16 @@ class HashTableItem(typing.Generic[KT, VT]):
 
 
 class HashTable(typing.Generic[KT, VT]):
-    __slots__ = 'size', 'storage'
+    __slots__ = 'size', 'storage', '_keys'
 
     def __init__(self, **kwargs: VT):
         self.size: typing.Final[int] = 101111
         self.storage: list[HashTableItem[KT, VT] | None] = [None] * self.size
+        self._keys: list[KT] = []
 
         for key in kwargs:
             self[key] = kwargs[key]
+            self._keys.append(key)
 
     def get(self, key: KT, default: DVT = None) -> VT | DVT:
         try:
@@ -39,6 +41,12 @@ class HashTable(typing.Generic[KT, VT]):
         except KeyError:
             return default
 
+    def keys(self) -> list[KT]:
+        return self._keys
+    
+    def values(self) -> list[VT]:
+        return [self[key] for key in self._keys]
+    
     def __getitem__(self, key: KT) -> VT:
         key_hash = hash(key) % self.size
 
@@ -57,12 +65,14 @@ class HashTable(typing.Generic[KT, VT]):
 
         if not self.storage[key_hash]:
             self.storage[key_hash] = HashTableItem(key, value)
+            self._keys.append(key)
         else:
             item = self.storage[key_hash]
 
             for item in self.__walk_hashtable_items(item):
                 if not item.next:
                     item.next = HashTableItem(key, value)
+                    self._keys.append(key)
                     break
 
                 if item.key == key:
@@ -86,16 +96,20 @@ class HashTable(typing.Generic[KT, VT]):
 
                 if item.key == key:
                     self.storage[key_hash] = None
+                    self._keys.remove(key)
                     return
 
                 if not item.next:
                     break
+    
+    def __iter__(self) -> typing.Iterator[tuple[KT, VT]]:
+        for key in self._keys:
+            yield key, self[key]
 
     def __walk_hashtable_items(self, root: HashTableItem) -> typing.Iterator[HashTableItem]:
         while root:
             yield root
             root = root.next
-
 
 class TestHashTableMethods(unittest.TestCase):
     def test_all_aviable_methods(self):
