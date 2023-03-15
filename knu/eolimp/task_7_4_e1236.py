@@ -1,9 +1,9 @@
-# https://www.eolymp.com/uk/submissions/13229150
+# https://www.eolymp.com/uk/submissions/13239101
 
 import typing
 from collections import defaultdict
 
-T = typing.TypeVar("T", int)
+T = typing.TypeVar("T", bound=int)
 
 def binary_search(data: list[T], x: T) -> T:
     low, high = 0, len(data) - 1
@@ -38,25 +38,21 @@ def main():
     result = None
 
     for word in obscene_words:
-        word_letters_info = get_letters_info(word)
-        
-        if all(len(word_letters_info[char]) <= len(text_letters_info[char]) for char in word_letters_info):
-            text_letters_info_copy = text_letters_info
-            indexes: list[int] = []
+        indexes: list[int] = []
 
-            for char in word:
-                last = indexes[-1] if indexes else -1
-                item = binary_search(text_letters_info_copy[char], last)
+        for char in word:
+            last = indexes[-1] if indexes else -1
+            item = binary_search(text_letters_info[char], last)
 
-                if item != -1:
-                    indexes.append(item)
-                
-                else:
-                    break
+            if item != -1:
+                indexes.append(item)
             
             else:
-                num = indexes[-1] + 1
-                result = result if result and result < num else num
+                break
+        
+        else:
+            num = indexes[-1] + 1
+            result = result if result and result < num else num
 
     if result:
         print(f"YES {result}")
