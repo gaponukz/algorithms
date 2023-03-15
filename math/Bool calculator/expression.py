@@ -17,6 +17,10 @@ OPERATORS = {
     "impl": {
         "priority": 0,
         "function": lambda a, b: not a or b
+    },
+    "xor": {
+        "priority": 0,
+        "function": lambda a, b: a ^ b
     }
 }
 
