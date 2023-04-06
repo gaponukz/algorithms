@@ -1,14 +1,24 @@
+# https://www.eolymp.com/uk/submissions/13328154
+
+import itertools
+
 def count_exam_scores(n, current, min_limit):
+    '''
+    40%
+    '''
     max_limit = current - (n - 1) * min_limit + 1
     count = 0
 
-    for score_list in product(range(min_limit, max_limit), repeat=n):
+    for score_list in itertools.product(range(min_limit, max_limit), repeat=n):
         if sum(score_list) == current:
             count += 1
     
     return count
 
 def count_exam_scores(n, current, min_limit):
+    '''
+    40%
+    '''
     max_limit = current - (n - 1) * min_limit + 1
     count = 0
 
@@ -29,6 +39,9 @@ def count_exam_scores(n, current, min_limit):
     return count
 
 def count_exam_scores(n, current, min_limit):
+    '''
+    100% (using dynamic programming)
+    '''
     table = [[0] * (current + 1) for _ in range(n + 1)]
     table[0][0] = 1
 
@@ -38,12 +51,17 @@ def count_exam_scores(n, current, min_limit):
 
     return table[n][current]
 
-with open("output.txt", "w", encoding="utf-8") as out_stream:
-    with open("input.txt", 'r', encoding='utf-8') as input_stream:
-        n = int(input_stream.readline())
+if __name__ == '__main__':
+    '''
+    Висновок: повний перебір не є ефективним
+    та при можливісті його потрібно замінити)
+    '''
+    with open("output.txt", "w", encoding="utf-8") as out_stream:
+        with open("input.txt", 'r', encoding='utf-8') as input_stream:
+            n = int(input_stream.readline())
 
-        for _ in range(n):
-            length, marks_sum, min_limit = list(map(int, input_stream.readline().split()))
+            for _ in range(n):
+                length, marks_sum, min_limit = list(map(int, input_stream.readline().split()))
 
-            count = count_exam_scores(length, marks_sum, min_limit)
-            out_stream.write(f"{count}\n")
+                count = count_exam_scores(length, marks_sum, min_limit)
+                out_stream.write(f"{count}\n")

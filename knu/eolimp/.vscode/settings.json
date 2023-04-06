@@ -1,5 +1,7 @@
 {
     "files.associations": {
         "iostream": "cpp"
-    }
+    },
+    "python.linting.mypyEnabled": false,
+    "python.linting.enabled": false
 }
