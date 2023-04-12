@@ -21,6 +21,10 @@ OPERATORS = {
     "xor": {
         "priority": 0,
         "function": lambda a, b: a ^ b
+    },
+    "eq": {
+        "priority": 0,
+        "function": lambda a, b: a == b
     }
 }
 

@@ -14,4 +14,5 @@ def print_bool_table(str_expression: str) -> None:
         print(f"{variables_values} | {formtaed_expression} = {int(result)}")
 
 if __name__ == "__main__":    
-    print_bool_table("(({a} impl ({b} xor {c})) and ({c} impl {d}) and not {d}) impl ({a} impl {b})")
+    print_bool_table("not ({x} impl ({y} or {z})) eq (({x} and {y}) impl ({x} or not {z}))")
+    # print_bool_table("{x} and not {y} and not {z}")
