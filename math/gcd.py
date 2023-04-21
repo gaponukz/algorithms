@@ -29,9 +29,19 @@ def gcd(a: MA, b: MA) -> MA:
 
     return b
 
-if __name__ == '__main__':
-    a = ModAbleComplex(32, 9)
-    b = ModAbleComplex(4, 11)
-    result = gcd(a, b)
+def extended_euclid(a, b):
+    if b == 0:
+        return a, 1, 0
+    
+    d, x, y = extended_euclid(b, a % b)
+    
+    return d, y, x - (a // b) * y
 
-    print(result)
+if __name__ == '__main__':
+    a, b = 77, 444
+    d, x, y = extended_euclid(b, a)
+    revers = b + y
+    
+    print(f"{a}*{x} + {b}*{y} = {d}")
+    print(revers)
+    print(a * revers % b)
