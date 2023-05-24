@@ -3,7 +3,10 @@
         "iostream": "cpp",
         "vector": "cpp",
         "xstring": "cpp",
-        "string": "cpp"
+        "string": "cpp",
+        "unordered_set": "cpp",
+        "unordered_map": "cpp",
+        "queue": "cpp"
     },
     "python.linting.mypyEnabled": false,
     "python.linting.enabled": false
